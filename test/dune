@@ -1,0 +1,14 @@
+(library
+ (name code_breaker_hardcaml_test)
+ (libraries
+  core
+  hardcaml
+  code_breaker_hardcaml
+  hardcaml_test_harness
+  hardcaml_waveterm
+  re)
+ (preprocess
+  (pps ppx_hardcaml ppx_jane))
+ (inline_tests
+  (deps
+   (glob_files test_data/*))))
