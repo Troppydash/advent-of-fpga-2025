@@ -20,3 +20,4 @@ module O : sig
 end
 
 val hierarchical : Scope.t -> Signal.t I.t -> Signal.t O.t
+val hierarchical2 : Scope.t -> Signal.t I.t -> Signal.t O.t

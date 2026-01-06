@@ -13,6 +13,17 @@ let generate_code_breaker_rtl () =
   print_endline rtl
 ;;
 
+let generate_code_breaker2_rtl () =
+  let module C = Circuit.With_interface (Code_breaker.I) (Code_breaker.O) in
+  let scope = Scope.create ~auto_label_hierarchical_ports:true () in
+  let circuit = C.create_exn ~name:"code_breake2_top" (Code_breaker.hierarchical2 scope) in
+  let rtl_circuits =
+    Rtl.create ~database:(Scope.circuit_database scope) Verilog [ circuit ]
+  in
+  let rtl = Rtl.full_hierarchy rtl_circuits |> Rope.to_string in
+  print_endline rtl
+;;
+
 let generate_joltage_rtl () =
   let module C = Circuit.With_interface (Joltage.I) (Joltage.O) in
   let scope = Scope.create ~auto_label_hierarchical_ports:true () in
@@ -39,8 +50,12 @@ let range_finder_rtl_command =
   Command.basic
     ~summary:""
     [%map_open.Command
-      let () = return () in
-      fun () -> generate_code_breaker_rtl ()]
+      let part = anon ("part" %: int) in
+      fun () ->
+        match part with
+        | 1 -> generate_code_breaker_rtl ()
+        | 2 -> generate_code_breaker2_rtl ()
+        | _ -> raise_s [%message "invalid"]]
 ;;
 
 let joltage_rtl_command =
