@@ -42,6 +42,41 @@ let simple_testbench (values : int list) (sim : Harness.Sim.t) =
   print_s [%message "Result" (solution : int)]
 ;;
 
+let outputting_testbench (output : int ref) (values : int list) (sim : Harness.Sim.t) =
+  let inputs = Cyclesim.inputs sim in
+  let outputs = Cyclesim.outputs sim in
+  let cycle ?n () = Cyclesim.cycle ?n sim in
+  (* Helper function for inputting one value *)
+  let feed_input n =
+    inputs.data_in <--. n;
+    inputs.data_in_valid := Bits.vdd;
+    cycle ();
+    inputs.data_in_valid := Bits.gnd;
+    cycle ()
+  in
+  (* Reset the design *)
+  inputs.clear := Bits.vdd;
+  cycle ();
+  inputs.clear := Bits.gnd;
+  cycle ();
+  (* Pulse the start signal *)
+  inputs.start := Bits.vdd;
+  cycle ();
+  inputs.start := Bits.gnd;
+  (* Input some data *)
+  List.iter values ~f:(fun x -> feed_input x);
+  inputs.finish := Bits.vdd;
+  cycle ();
+  inputs.finish := Bits.gnd;
+  cycle ();
+  (* Wait for result to become valid *)
+  while not (Bits.to_bool !(outputs.solution.valid)) do
+    cycle ()
+  done;
+  let solution = Bits.to_unsigned_int !(outputs.solution.value) in
+  output := solution
+;;
+
 let input_to_digits input =
   input |> String.to_list |> List.map ~f:(fun x -> int_of_string (String.of_char x))
 ;;
@@ -63,7 +98,6 @@ let%expect_test "Simple test 2" =
     (simple_testbench (input_to_digits "987654321111111"));
   [%expect {| (Result (solution 98)) |}]
 ;;
-
 
 let%expect_test "Simple test with printing waveforms directly" =
   let display_rules =
@@ -107,4 +141,39 @@ let%expect_test "Simple test with printing waveforms directly" =
     │                              ││────────────────┴───────┴───────┴───────┴───────┴───────┴─│
     └──────────────────────────────┘└──────────────────────────────────────────────────────────┘
     |}]
+;;
+
+let%expect_test "Full test 2" =
+  let lines = In_channel.read_lines "test_data/joltage.txt" in
+  let solutions =
+    List.map lines ~f:(fun line ->
+      let numbers = input_to_digits line in
+      let output = ref 0 in
+      Harness.run_advanced
+        ~waves_config
+        ~create:Joltage.hierarchical2
+        (outputting_testbench output numbers);
+      !output)
+  in
+  let solution = List.reduce_exn ~f:( + ) solutions in
+  print_s [%message "total" (solution : int)];
+  [%expect {| (total (solution 17074)) |}]
+;;
+
+
+let%expect_test "Full test 12" =
+  let lines = In_channel.read_lines "test_data/joltage.txt" in
+  let solutions =
+    List.map lines ~f:(fun line ->
+      let numbers = input_to_digits line in
+      let output = ref 0 in
+      Harness.run_advanced
+        ~waves_config
+        ~create:Joltage.hierarchical
+        (outputting_testbench output numbers);
+      !output)
+  in
+  let solution = List.reduce_exn ~f:( + ) solutions in
+  print_s [%message "total" (solution : int)];
+  [%expect {| (total (solution 169512729575727)) |}]
 ;;
