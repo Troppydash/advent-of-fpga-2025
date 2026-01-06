@@ -160,7 +160,6 @@ let%expect_test "Full test 2" =
   [%expect {| (total (solution 17074)) |}]
 ;;
 
-
 let%expect_test "Full test 12" =
   let lines = In_channel.read_lines "test_data/joltage.txt" in
   let solutions =

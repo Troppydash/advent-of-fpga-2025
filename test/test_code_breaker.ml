@@ -180,7 +180,7 @@ let%expect_test "Simple test part 2" =
   [%expect {| (Result (times 6)) |}]
 ;;
 
-let%expect_test "Simple test with printing waveforms directly" =
+let%expect_test "Simple test 2 with printing waveforms directly" =
   let display_rules =
     [ Display_rule.port_name_matches
         ~wave_format:(Bit_or Unsigned_int)
