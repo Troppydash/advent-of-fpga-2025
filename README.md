@@ -2,7 +2,12 @@ Advent of FPGA submission
 ===========================
 
 Problems solved
-- `code_breaker.ml`, solution to the 2025 aoc day 1 part 1
+- `src/code_breaker.ml`, solution to the 2025 aoc day 1 part 1
+    - build using `bin/generate.exe code-breaker`
+- `src/joltage.ml`, solution to the 2025 aoc day 3 part 1 and 2
+    - build using `bin/generate.exe code-breaker 2` for part 1
+    - build using `bin/generate.exe code-breaker 12` for part 2
+
 
 ## Building
 For development, run
@@ -17,11 +22,11 @@ dune build bin/generate.exe @runtest
 
 To generate RTL, run
 ```
-bin/generate.exe <name>
+bin/generate.exe <name> <arg>
 ```
 
 ## Input formats
-- `code_breaker.ml`
+- `src/code_breaker.ml`
     - inputs are integers fed into the input wire `data_in`, with positive integers indicating a right rotation and negative integers indicate a left rotation (the magnitude is the amount of rotation)
     - output is an integer of the wire `times`, denoting the solution to the problem
     - testbench is located in `test/test_code_breaker.ml`, with the last expect test verifying the correctness on the full aoc input
@@ -39,3 +44,5 @@ bin/generate.exe <name>
             => (x * 1374389535) << 37
             # which could overshoot if x is negative, so a remainder check of 100 is performed after
             ```
+- `src/joltage.ml`
+    - inputs are (todo)
