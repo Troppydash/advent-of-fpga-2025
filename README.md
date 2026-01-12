@@ -3,26 +3,35 @@ Advent of FPGA submission
 
 Problems solved
 - `src/code_breaker.ml`, solution to the 2025 aoc day 1 part 1 and 2
-    - build using `bin/generate.exe code-breaker 1` for part 1
-    - build using `bin/generate.exe code-breaker 2` for part 2
+    - generate RTL using `bin/generate.exe code-breaker 1` for part 1
+    - generate RTL using `bin/generate.exe code-breaker 2` for part 2
 - `src/joltage.ml`, solution to the 2025 aoc day 3 part 1 and 2
-    - build using `bin/generate.exe code-breaker 2` for part 1
-    - build using `bin/generate.exe code-breaker 12` for part 2
+    - generate RTL using `bin/generate.exe code-breaker 2` for part 1
+    - generate RTL using `bin/generate.exe code-breaker 12` for part 2
 
+Repo based on [this](https://github.com/janestreet/hardcaml_template_project/tree/with-extensions)
 
 ## Building
-For development, run
+To install the libraries using opam, run
+```bash
+opam switch 5.2.0+ox
+eval $(opam env)
+opam install -y hardcaml hardcaml_test_harness hardcaml_waveterm ppx_hardcaml
+opam install -y core core_unix ppx_jane rope re dune
 ```
+
+For development, run
+```bash
 dune build --watch --terminal-persistence=clear-on-rebuild-and-flush-history bin/generate.exe @runtest
 ```
 
 For a complete build with expect tests, run
-```
+```bash
 dune build bin/generate.exe @runtest
 ```
 
 To generate RTL, run
-```
+```bash
 bin/generate.exe <name> <arg>
 ```
 
@@ -64,4 +73,3 @@ bin/generate.exe <name> <arg>
         - create `n+1` 64-bit registers as dp memory, with `dp[i]` denoting the longest `i` digit number so far. Initialize all to zero
         - for each new digit, update dp using recurrence `dp[i] = max(dp[i], dp[i-1]*10+d)` where `d` is the new digit
         - answer is the last register in the dp array, or `dp[n]`
-        
